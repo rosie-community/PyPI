@@ -1,5 +1,4 @@
 from setuptools import setup, find_packages
-from setuptools.command.install import install
 from setuptools.command.sdist import sdist
 import subprocess, os, sys
 
@@ -60,10 +59,6 @@ def build_rosie():
     os.chdir(cwd)
     return
 
-class librosieInstall(install):
-    def run(self):
-        raise RuntimeError('Do not use setup.py install.  Use pip on the wheel file in the dist directory.')
-
 class custom_sdist(sdist):
     def run(self):
         git_clone_rosie()
@@ -83,20 +78,19 @@ except ImportError:
 
 
 def readme():
-    readmefile = ROSIE_DIR + "/README" 
+    readmefile = os.path.join(SRC_DIR, "README") 
     if not os.path.isfile(readmefile):
-        print("README file not available.  Leaving description empty.")
-        return "See project README"
+        raise RuntimeError("README file not found at " + readmefile)
     return open(readmefile).read()
 
 setup(
     name="rosie",
     version=VERSION,
 
-    # Do NOT use include_package_data, else the entire
+    # Do NOT set include_package_data to True, else the entire
     # rosie-pattern-language source tree will be included in the
     # binary (wheel) distribution!
-    #   include_package_data=True,
+    include_package_data=False,
 
     packages = find_packages(),
 
@@ -119,7 +113,7 @@ setup(
     # metadata for upload to PyPI
     author="Jamie Jennings",
     author_email="rosie.pattern.language@gmail.com",
-    description="Rosie Pattern Language (replaces regex for data mining and search",
+    description="Rosie Pattern Language (replaces regex for data mining and text search)",
 
     long_description=readme(),
 
