@@ -4,8 +4,7 @@ from setuptools.command.sdist import sdist
 import subprocess, os, sys
 
 VERSION = '1.0.0-beta-5'
-#TAG = 'v' + VERSION
-TAG = 'beta5'                   # TEMPORARY
+TAG = 'v' + VERSION
 
 ROSIE_URL = "https://github.com/jamiejennings/rosie-pattern-language"
 ROSIE_DIR = "rosie-pattern-language"
