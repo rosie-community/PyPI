@@ -1,0 +1,11 @@
+The 'sdist' command obtains the rosie source from github and creates a
+source distribution.
+
+The 'bdist_wheel' command builds rosie and creates a binary (wheel)
+distribution that can be installed with pip.
+
+Here's how I generate and install the wheel on my OS X machine:
+
+python setup.py sdist
+python setup.py bdist_wheel
+pip install dist/rosie-1.0.0b5-cp27-cp27m-macosx_10_13_intel.whl

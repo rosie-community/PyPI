@@ -1,0 +1,5 @@
+recursive-include rosie/rosie-pattern-language *
+prune rosie/rosie-pattern-language/.git
+prune rosie/rosie-pattern-language/test
+prune rosie/rosie-pattern-language/src/unicode
+prune rosie/rosie-pattern-language/extra

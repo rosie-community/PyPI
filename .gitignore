@@ -1,0 +1,7 @@
+# The source for Rosie is obtained and updated when 'python setup.py sdist' is run.
+# We should not check in the entire source tree, since it's already on github.
+rosie/rosie-pattern-language
+
+*~
+*.pyc
+rosie/*.pyc
