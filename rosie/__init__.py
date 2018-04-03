@@ -1,3 +1,3 @@
-from rosie import *
+from .rosie import *
 
 
