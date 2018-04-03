@@ -1,4 +1,5 @@
 from setuptools import setup, find_packages
+from setuptools.command.install import install
 from setuptools.command.sdist import sdist
 import subprocess, os, sys
 
@@ -64,6 +65,13 @@ class custom_sdist(sdist):
         git_clone_rosie()
         sdist.run(self)
 
+# TODO: Provide an install option which does not install rosie itself,
+# and configures rosie.py to use an existing installation (e.g. a
+# system one).
+class custom_install(install):
+    def run(self):
+        install.run(self)
+        
 try:
     from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
     class bdist_wheel(_bdist_wheel):
@@ -105,9 +113,12 @@ setup(
              'rosie-pattern-language/rpl/*/*'],
     },
 
+#    scripts=[os.path.join(SRC_DIR, ROSIE_DIR, 'bin/rosie')],
+
     cmdclass={
-        'bdist_wheel': bdist_wheel,
         'sdist': custom_sdist,
+        'bdist_wheel': bdist_wheel,
+        'install': custom_install,
     },
 
     # metadata for upload to PyPI
