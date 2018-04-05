@@ -1,7 +1,10 @@
+from __future__ import print_function
 from setuptools import setup, find_packages
 from setuptools.command.install import install
 from setuptools.command.sdist import sdist
-import subprocess, os, sys
+from distutils.command.build import build
+from distutils.command.clean import clean
+import subprocess, os, sys, shutil
 
 VERSION = '1.0.0-beta-5'
 TAG = 'v' + VERSION
@@ -12,20 +15,19 @@ SRC_DIR = 'rosie'
 
 def git_clone_rosie():
     devnull = open(os.devnull, 'w')
-    if not subprocess.call(('git', 'version'), stdout=devnull) == 0:
-        raise subprocess.CalledProcessError("Could not run 'git', which is required to download rosie source.")
     cwd = os.getcwd()
     os.chdir(SRC_DIR)
-    # Obtain or refresh rosie distribution
+    # Obtain rosie distribution
     if os.path.isdir(ROSIE_DIR):
         os.chdir(ROSIE_DIR)
-        subprocess.check_call(('git', 'fetch', 'origin', TAG))
+        print("Found directory", os.path.join(SRC_DIR, ROSIE_DIR))
+        # if not subprocess.call('git fetch origin {}'.format(TAG), shell=True, stderr=devnull):
+        #     print("Unable to obtain code updates from github.  Using existing local code repository.")
     else:
-        subprocess.check_call(('git', 'clone',
-                               '-b', TAG,
-                               '--recurse-submodules',
-                               ROSIE_URL + '.git',
-                               ROSIE_DIR))                
+        print("Rosie source code directory not found.  Attempting to clone it now...")
+        subprocess.check_call(
+            ('git clone -b {} --recurse-submodules {}.git {}'.format(TAG, ROSIE_URL, ROSIE_DIR)),
+            shell=True)
     os.chdir(cwd)
     return
     
@@ -34,21 +36,25 @@ def build_rosie():
     os.chdir(SRC_DIR)
     if not os.path.isdir(ROSIE_DIR):
         raise RuntimeError("Need to obtain rosie source first.  Try 'python setup.py sdist'.")
+    librosie = 'librosie' + ('.dylib' if sys.platform == 'darwin' else '.so')
+
+    print("Checking for {} and rosie.py".format(librosie))
+    have_librosie = os.path.isfile(librosie)
+    have_rosie_py = os.path.isfile('rosie.py')
+    if have_librosie: print("Found", str(librosie))
+    if have_rosie_py: print("Found", str('rosie.py'))
+    if have_librosie and have_rosie_py:
+        os.chdir(cwd)
+        return
+
     os.chdir(ROSIE_DIR)
+    output_dir = '..'
 
     # Build the Rosie shared library
     subprocess.check_call(('make', 'clean'))
-    subprocess.check_call(('make', 'ROSIE_HOME="//rosie-pattern-language"'))
-
-    # Copy the built files to the top level 'rosie' dir
-    if sys.platform == 'darwin':
-        lib_extension = '.dylib'
-    else:
-        lib_extension = '.so'
+    subprocess.check_call(('make', 'ROSIE_HOME="//rosie-pattern-language"', 'BREW=1'))
 
     # Copy built files to the right place
-    librosie = 'librosie' + lib_extension
-    output_dir = '..'
     subprocess.check_call(('cp',
                            'src/librosie/binaries/' + librosie,
                            output_dir + '/' + librosie))
@@ -65,13 +71,42 @@ class custom_sdist(sdist):
         git_clone_rosie()
         sdist.run(self)
 
-# TODO: Provide an install option which does not install rosie itself,
-# and configures rosie.py to use an existing installation (e.g. a
-# system one).
+class custom_clean(clean):
+    def run(self):
+        for dir in ['build', 'dist', os.path.join(SRC_DIR, ROSIE_DIR)]:
+            try:
+                shutil.rmtree(dir)
+            except:
+                pass
+        for file in ['rosie.py', 'rosie.pyc', 'librosie.so', 'librosie.dylib']:
+            try:
+                os.remove(os.path.join(SRC_DIR, file))
+            except:
+                pass
+        clean.run(self)
+
 class custom_install(install):
     def run(self):
+        print("""
+
+        The installation process will:
+        (1) obtain the full rosie source code from github, if needed;
+        (2) build the binary for your platform using 'make' and 'gcc/cc';
+        (3) then do the python installation.
+
+        """)
+        if not os.path.isdir(os.path.join(SRC_DIR, ROSIE_DIR)): 
+             git_clone_rosie()
+             build_rosie()
         install.run(self)
         
+class custom_build(build):
+    def run(self):
+        print("Building librosie...")
+        git_clone_rosie()
+        build_rosie()
+        build.run(self)
+
 try:
     from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
     class bdist_wheel(_bdist_wheel):
@@ -79,8 +114,8 @@ try:
             _bdist_wheel.finalize_options(self)
             self.root_is_pure = False
             build_rosie()
-except ImportError:
-    class bdist_wheel(_bdist_wheel):
+except ImportError, NameError:
+    class bdist_wheel():
         def run(self):
             raise RuntimeError("Package 'wheel' not installed.  Try 'pip install wheel'.")
 
@@ -104,8 +139,9 @@ setup(
 
     install_requires=['cffi >= 1.9'],
 
-    package_data={
+    package_data = {
         '': ['librosie.*',
+             'rosie/README',
              'rosie-pattern-language/VERSION',
              'rosie-pattern-language/LICENSE',
              'rosie-pattern-language/lib/*',
@@ -113,12 +149,14 @@ setup(
              'rosie-pattern-language/rpl/*/*'],
     },
 
-#    scripts=[os.path.join(SRC_DIR, ROSIE_DIR, 'bin/rosie')],
+#    scripts = ['bin/rosie', 'bin/rosie-configure'],
 
-    cmdclass={
+    cmdclass = {
         'sdist': custom_sdist,
+        'build': custom_build,
         'bdist_wheel': bdist_wheel,
         'install': custom_install,
+        'clean': custom_clean,
     },
 
     # metadata for upload to PyPI
