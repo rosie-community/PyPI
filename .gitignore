@@ -5,3 +5,4 @@ rosie/rosie-pattern-language
 *~
 *.pyc
 rosie/*.pyc
+rosie.egg-info
