@@ -58,11 +58,14 @@ def build_rosie():
     subprocess.check_call(('cp',
                            'src/librosie/binaries/' + librosie,
                            output_dir + '/' + librosie))
-    with open(output_dir + '/rosie.py', 'w') as ROSIE_PY_FILE:
-        subprocess.check_call(('cat',
-                               'src/librosie/python/rosie.py',
-                               'src/librosie/python/pypi_config.py'),
-                              stdout = ROSIE_PY_FILE)
+    subprocess.check_call(('cp',
+                           'src/librosie/python/rosie.py',
+                           output_dir + '/rosie.py'))
+    # with open(output_dir + '/rosie.py', 'w') as ROSIE_PY_FILE:
+    #     subprocess.check_call(('cat',
+    #                            'src/librosie/python/rosie.py',
+    #                            'src/librosie/python/pypi_config.py'),
+    #                           stdout = ROSIE_PY_FILE)
     os.chdir(cwd)
     return
 
