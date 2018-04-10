@@ -12,7 +12,6 @@ echo "Testing in directory `pwd` with `$python_bin --version 2>&1`"
 $python_bin -c <<EOF '
 from __future__ import print_function
 import rosie, json
-rosie.set_librosie_dir("//")
 e = rosie.engine()
 for parms in json.loads(e.config()):
     for parm in parms:
