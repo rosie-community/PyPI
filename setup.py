@@ -6,7 +6,7 @@ from distutils.command.build import build
 from distutils.command.clean import clean
 import subprocess, os, sys, shutil
 
-VERSION = '1.0.0-beta-6'
+VERSION = '1.0.0b64'
 TAG = 'v' + VERSION
 
 ROSIE_URL = "https://github.com/jamiejennings/rosie-pattern-language"
@@ -120,12 +120,6 @@ except:
             raise RuntimeError("Package 'wheel' not installed.  Try 'pip install wheel'.")
 
 
-def readme():
-    readmefile = os.path.join(SRC_DIR, "README") 
-    if not os.path.isfile(readmefile):
-        raise RuntimeError("README file not found at " + readmefile)
-    return open(readmefile).read()
-
 setup(
     name="rosie",
     version=VERSION,
@@ -141,7 +135,6 @@ setup(
 
     package_data = {
         '': ['librosie.*',
-             'rosie/README',
              'rosie-pattern-language/VERSION',
              'rosie-pattern-language/LICENSE',
              'rosie-pattern-language/lib/*',
@@ -164,10 +157,34 @@ setup(
     author_email="rosie.pattern.language@gmail.com",
     description="Rosie Pattern Language (replaces regex for data mining and text search)",
 
-    long_description=readme(),
+    long_description="""
+Rosie and the Rosie Pattern Language (RPL)
+
+RPL expressions are patterns for matching text, similar to regex but
+more powerful.  You can use RPL for text pattern matching the way you
+might use PCRE or regex in Perl, Python, or Java.  Unlike regex, RPL
+is readable and maintainable, and packages of rpl are easily shared.
+
+The Rosie project provides a library so you can use RPL from a variety
+of programming languages.  We also provide an interactive read-eval-
+print loop for pattern development and debugging, and an RPL compiler.
+The Rosie matching engine is very small and reasonably fast.
+
+Rosie's home page:
+  http://rosie-lang.org
+
+The repository of record for the Rosie project is located at:
+  https://github.com/jamiejennings/rosie-pattern-language
+
+Open issues are at:
+  https://github.com/jamiejennings/rosie-pattern-language/issues
+
+Before opening an issue with a bug report or an enhancement request,
+please check the current open issues.
+""",
 
     license="MIT",
-    keywords="rosie pattern PEG regex regexp data mining text search",
+    keywords="rosie pattern language PEG regex regexp data mining text search",
     url="http://rosie-lang.org",
     project_urls={
         "Issue page": "https://github.com/jamiejennings/rosie-pattern-language/issues/",
