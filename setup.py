@@ -28,6 +28,7 @@ def git_clone_rosie():
         subprocess.check_call(
             ('git clone -b {} --recurse-submodules {}.git {}'.format(TAG, ROSIE_URL, ROSIE_DIR)),
             shell=True)
+        os.chdir(ROSIE_DIR)
     # Copy rosie.py out of the rosie source code to the top level
     output_dir = '..'
     subprocess.check_call(('cp',
