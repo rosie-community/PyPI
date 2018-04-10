@@ -5,3 +5,9 @@ rosie/rosie-pattern-language
 *~
 *.pyc
 rosie/*.pyc
+dist
+build
+rosie.egg-info
+
+# This entry is a copy of rosie-pattern-language/src/librosie/python/rosie.py
+rosie/rosie.py
