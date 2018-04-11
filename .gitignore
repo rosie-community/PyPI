@@ -6,6 +6,7 @@ rosie/rosie-pattern-language
 *.pyc
 rosie/*.pyc
 rosie/librosie.*
+rosie/rosie_cli
 dist
 build
 rosie.egg-info

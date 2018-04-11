@@ -64,6 +64,9 @@ def build_rosie():
     subprocess.check_call(('cp',
                            'src/librosie/binaries/' + librosie,
                            output_dir + '/' + librosie))
+    subprocess.check_call(('cp',
+                           'src/librosie/binaries/rosie',
+                           output_dir + '/rosie_cli'))
     os.chdir(cwd)
     return
 
@@ -136,6 +139,7 @@ setup(
 
     package_data = {
         '': ['librosie.*',
+             'rosie_cli',
              'rosie-pattern-language/VERSION',
              'rosie-pattern-language/LICENSE',
              'rosie-pattern-language/lib/*',
