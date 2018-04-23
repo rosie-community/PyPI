@@ -6,7 +6,7 @@ from distutils.command.build import build
 from distutils.command.clean import clean
 import subprocess, os, sys, shutil
 
-VERSION = '1.0.0-beta-7'
+VERSION = '1.0.0-beta-8'
 TAG = 'v' + VERSION
 
 ROSIE_URL = "https://github.com/jamiejennings/rosie-pattern-language"
