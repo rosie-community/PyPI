@@ -38,4 +38,11 @@ python setup.py bdist_wheel
 pip install dist/rosie-1.0.0b5-cp27-cp27m-macosx_10_13_intel.whl
 ```
 
+And then the upload:
+
+```
+twine upload dist/*
+```
+
+
 
